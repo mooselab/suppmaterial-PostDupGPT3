@@ -18,7 +18,7 @@ git clone https://github.com/mooselab/suppmaterial-PostDupGPT3.git
 
 You can install the Python libraries using pip:
 ```bash
-cd ./DuplicatePostDetectionGPT3/src
+cd ./suppmaterial-PostDupGPT3/src
 pip install -r requirements.txt
 ```
 
@@ -35,7 +35,7 @@ python ./train_triplet_loss.py
 ### Train with MNR loss
 
 ```
-cd src
+cd ./src
 python ./train_MNR_loss.py
 ```
 
