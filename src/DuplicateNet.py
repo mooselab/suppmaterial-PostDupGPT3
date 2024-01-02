@@ -7,7 +7,7 @@ from tqdm import tqdm
 import os
 
 class DuplicateNet(torch.nn.Module):
-    def __init__(self, dim_emb, loss_fn, sim_fn = None): 
+    def __init__(self, dim_emb, loss_fn, sim_fn = None, hidden_size = 128): 
         super(DuplicateNet, self).__init__()
         self.loss_fn = loss_fn
         self.dim_emb = dim_emb
@@ -15,14 +15,23 @@ class DuplicateNet(torch.nn.Module):
             self.sim_fn = torch.nn.CosineSimilarity(dim=0, eps=1e-6)
         else:
             self.sim_fn = sim_fn
-        self.fc_p1 = torch.nn.Linear(self.dim_emb, 50)
-
+        self.fc_p1 = torch.nn.Linear(self.dim_emb, hidden_size)
+        self.batch_norm = torch.nn.BatchNorm1d(hidden_size)
+        self.activation = torch.nn.ReLU()
+        self.fc_p2 = torch.nn.Linear(hidden_size, 50)
+        
     def forward(self, emb):
-        return self.fc_p1(emb)
+        if emb.dim() == 1:
+            emb = emb.unsqueeze(0)
+        x = self.fc_p1(emb)
+        x = self.batch_norm(x)
+        x = self.activation(x)
+        x = self.fc_p2(x)
+        return x
     
     def forward_eval(self, emb):
         self.eval()
-        return self.fc_p1(emb)
+        return self.forward(emb)
         
     def embedding_generation(self, dataset):
         self.eval()
